@@ -1,6 +1,6 @@
 ---
 - name: Ansible Playbook to Deploy Mesos Masters/Slaves and Marathon
-  hosts: mesos-masters 
+  hosts: localhost 
   remote_user: vagrant
   sudo: yes
   gather_facts: yes
@@ -21,7 +21,7 @@
       tags: update_system
 
     - name: Installing packages
-      apt: name={{ item }} state=presnt
+      apt: name={{ item }} state=present
       with_items:
         - mesos
         - marathon
@@ -62,7 +62,7 @@
       tags: overide
     
     - name: Start up master service
-      service: name={{ item }} state=restarted enable=yes
+      service: name={{ item }} state=restarted enabled=yes
       with_items: 
         - mesos-master
         - marathon
