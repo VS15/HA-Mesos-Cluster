@@ -1,6 +1,6 @@
 ---
 - name: Ansible Playbook to Deploy Mesos Masters/Slaves and Marathon
-  hosts: mesos-masters 
+  hosts: localhost 
   remote_user: vagrant
   sudo: yes
   gather_facts: yes
@@ -24,46 +24,28 @@
       apt: name={{ item }} state=presnt
       with_items:
         - mesos
-        - marathon
-
-    - name: Update zookeper configuration
-      command: "sudo echo 1 > /etc/zookeeper/conf/myid"
-      when: ansible_hostname == "node1"
-      tags: zookeeper_value
-      
-    - name: Update zookeper configuration
-      command: "sudo echo 2 > /etc/zookeeper/conf/myid"
-      when: ansible_hostname == "node2"
-      tags: zookeeper_value
-
-    - name: Update zookeper configuration
-      command: "sudo echo 3 > /etc/zookeeper/conf/myid"
-      when: ansible_hostname == "node3"
-      tags: zookeeper_value
     
-    - name: Push zookeper configuration file
-      file: src=templates/zoo.cfg.j2 dest=/etc/zookeeper/conf/zoo.cfg
-      tags: push_conf
-    
-    - name: Push /etc/mesos/zk
-      file: src=templates/zk.j2 dest=/etc/mesos/zk
-      tags: push_conf2
-
-    - name: Pushing quorum value of 2 
-      command: "sudo echo 2 > /etc/mesos-master/quorum"
-      tags: push_conf3
-    
-    - name: Disable slave service
-      service: name=mesos-slave state=stopped
-      tags: slave_stop
+    - name: Stop zookeeper service
+      service: name=zookeeper state=stopped
+      tags: zookeeper_stop
     
     - name: Overide controls
-      command: "echo manual > /etc/init/mesos-slave.override"
-      tags: overide
-    
-    - name: Start up master service
-      service: name={{ item }} state=restarted enable=yes
-      with_items: 
-        - mesos-master
-        - marathon
-      tags: start_services
+      command: "echo manual > /etc/init/zookeeper.override"
+      tags: overide_zookeeper
+     
+    - name: Push /etc/mesos/zk
+      file: src=templates/zk.j2 dest=/etc/mesos/zk
+      tags: push_conf
+
+    - name: Disable mesos-master service
+      service: name=mesos-master state=stopped
+      tags: mesos-master_stop
+
+    - name: Overide controls
+      command: "echo manual > /etc/init/mesos-master.override"
+      tags: overide_zookeeper
+   
+    - name: Restart slave service
+      service: name=mesos-slave state=restarted enabled=yes
+      tags: slave_restarted
+
