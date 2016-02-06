@@ -1,9 +1,0 @@
-[mesos-masters]
-node01 10.1.200.11
-node02 10.1.200.12
-node03 10.1.200.13
-
-[mesos-slaves]
-node04 10.1.200.30
-node05 10.1.200.40
-node06 10.1.200.41
