@@ -1,2 +1,85 @@
 ---
-- name: Ansible Playbook to Deploy Mesos Masters/Slaves
+- name: Ansible Playbook to Deploy Mesos Masters/Slaves and Marathon
+  hosts: mesos 
+  remote_user: vagrant
+  sudo: yes
+  gather_facts: yes
+  #serial: "10%"
+  
+  tasks:
+    
+    - name: Add Repository Key
+      command: "sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv E56151BF"
+      tags: add key
+
+    - name: Add Repository for Mesos 
+      apt_repository: repo='deb http://repos.mesosphere.com/ubuntu vivid main' state=present
+      tags: add_repo
+
+    - name: Run system update
+      apt: update_cache=yes
+      tags: update_system
+
+    - name: Installing packages
+      apt: name={{ item }} state=presnt
+      with_items:
+        - mesos
+        - marathon
+
+    - name: Update zookeper configuration
+      command: "sudo echo 1 > /etc/zookeeper/conf/myid"
+      when: ansible_hostname == "node1"
+      tags: zookeeper_value
+      
+    - name: Update zookeper configuration
+      command: "sudo echo 2 > /etc/zookeeper/conf/myid"
+      when: ansible_hostname == "node2"
+      tags: zookeeper_value
+
+    - name: Update zookeper configuration
+      command: "sudo echo 3 > /etc/zookeeper/conf/myid"
+      when: ansible_hostname == "node3"
+      tags: zookeeper_value
+    
+    - name: Push zookeper configuration file
+      file: src=templates/zoo.cfg.j2 dest=/etc/zookeeper/conf/zoo.cfg
+      tags: push_conf
+    
+    - name: Push /etc/mesos/zk
+      file: src=templates/zk.j2 dest=/etc/mesos/zk
+      tags: push_conf2
+
+    - name: Pushing quorum value of 2 
+      command: "sudo echo 2 > /etc/mesos-master/quorum"
+      tags: push_conf3
+    
+    - name: Disable slave service
+      service: name=mesos-slave state=stopped
+      tags: slave_stop
+    
+    - name: Overide controls
+      command: "echo manual > /etc/init/mesos-slave.override"
+      tags: overide
+    
+    - name: Start up master service
+      service: name={{ item }} state=restarted
+      with_items: 
+        - mesos-master
+        - marathon
+      tags: start_services
+  
+
+
+
+
+
+   
+    
+
+
+
+
+
+
+
+
