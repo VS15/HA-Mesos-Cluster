@@ -50,5 +50,33 @@ Vagrant.configure("2") do |config|
     end
   end
 
+  config.vm.define "node05" do |node05|
+    node05.vm.box = "ubuntu/vivid64"
+    node05.vm.hostname = 'node05'
+    node05.vm.box_url = "ubuntu/vivid64"
+
+    node05.vm.network :private_network, ip: "10.1.200.40"
+
+    node05.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--memory", 1024]
+      v.customize ["modifyvm", :id, "--cpus", 2]
+      v.customize ["modifyvm", :id, "--name", "node05"]
+    end
+  end
+  
+  config.vm.define "node06" do |node06|
+    node06.vm.box = "ubuntu/vivid64"
+    node06.vm.hostname = 'node06'
+    node06.vm.box_url = "ubuntu/vivid64"
+
+    node06.vm.network :private_network, ip: "10.1.200.50"
+
+    node06.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--memory", 1024]
+      v.customize ["modifyvm", :id, "--cpus", 2]
+      v.customize ["modifyvm", :id, "--name", "node06"]
+    end
+  end
 
 end
+#tested
