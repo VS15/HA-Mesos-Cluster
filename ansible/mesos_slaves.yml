@@ -21,12 +21,12 @@
       tags: update_system
 
     - name: Installing packages
-      apt: name={{ item }} state=presnt
+      apt: name={{ item }} state=present
       with_items:
         - mesos
     
     - name: Stop zookeeper service
-      service: name=zookeeper state=stopped
+      service: name=zookeeper state=stopped enabled=no
       tags: zookeeper_stop
     
     - name: Overide controls
@@ -34,17 +34,13 @@
       tags: overide_zookeeper
      
     - name: Push /etc/mesos/zk
-      file: src=templates/zk.j2 dest=/etc/mesos/zk
+      copy: src=templates/zk.j2 dest=/etc/mesos/zk force=yes
       tags: push_conf
 
     - name: Disable mesos-master service
-      service: name=mesos-master state=stopped
+      service: name=mesos-master state=stopped enabled=no
       tags: mesos-master_stop
 
-    - name: Overide controls
-      command: "echo manual > /etc/init/mesos-master.override"
-      tags: overide_zookeeper
-   
     - name: Restart slave service
       service: name=mesos-slave state=restarted enabled=yes
       tags: slave_restarted

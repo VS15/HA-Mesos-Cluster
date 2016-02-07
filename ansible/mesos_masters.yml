@@ -27,39 +27,35 @@
         - marathon
 
     - name: Update zookeper configuration
-      command: "sudo echo 1 > /etc/zookeeper/conf/myid"
-      when: ansible_hostname == "node1"
+      raw: "sudo chmod 666  /etc/zookeeper/conf/myid; sudo echo 1 > /etc/zookeeper/conf/myid"
+      when: ansible_eth1.ipv4.address == "10.1.200.11"
       tags: zookeeper_value
       
     - name: Update zookeper configuration
-      command: "sudo echo 2 > /etc/zookeeper/conf/myid"
-      when: ansible_hostname == "node2"
+      command: "sudo chmod 666  /etc/zookeeper/conf/myid; sudo echo 2 > /etc/zookeeper/conf/myid"
+      when: ansible_eth1.ipv4.address == "10.1.200.12"
       tags: zookeeper_value
 
     - name: Update zookeper configuration
-      command: "sudo echo 3 > /etc/zookeeper/conf/myid"
-      when: ansible_hostname == "node3"
+      command: "sudo chmod 666  /etc/zookeeper/conf/myid; sudo echo 3 > /etc/zookeeper/conf/myid"
+      when: ansible_eth1.ipv4.address == "10.1.200.13"
       tags: zookeeper_value
     
     - name: Push zookeper configuration file
-      file: src=templates/zoo.cfg.j2 dest=/etc/zookeeper/conf/zoo.cfg
+      copy: src=templates/zoo.cfg.j2 dest=/etc/zookeeper/conf/zoo.cfg force=yes
       tags: push_conf
     
     - name: Push /etc/mesos/zk
-      file: src=templates/zk.j2 dest=/etc/mesos/zk
+      copy: src=templates/zk.j2 dest=/etc/mesos/zk force=yes
       tags: push_conf2
 
     - name: Pushing quorum value of 2 
-      command: "sudo echo 2 > /etc/mesos-master/quorum"
+      raw: "sudo chmod 666 /etc/mesos-master/quorum; sudo echo 2 > /etc/mesos-master/quorum"
       tags: push_conf3
     
     - name: Disable slave service
-      service: name=mesos-slave state=stopped
+      service: name=mesos-slave state=stopped enabled=no
       tags: slave_stop
-    
-    - name: Overide controls
-      command: "echo manual > /etc/init/mesos-slave.override"
-      tags: overide
     
     - name: Start up master service
       service: name={{ item }} state=restarted enabled=yes
