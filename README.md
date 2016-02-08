@@ -10,17 +10,8 @@ MESOS
 ZOOKEEPER
 MARATHON 
 
-Prerequisits: Vagrant and Virtual box
-<p class=MsoNormal style='text-align:justify'><span style='font-family:"Times New Roman"'><a
-href="https://www.vagrantup.com/downloads.html">https://www.vagrantup.com/downloads.html</a><o:p></o:p></span></p>
-
-<p class=MsoNormal style='text-align:justify'><span style='font-family:"Times New Roman"'><a
-href="https://www.virtualbox.org/wiki/Downloads">https://www.virtualbox.org/wiki/Downloads</a><o:p></o:p></span></p>
-
-Steps: 
-<p class=MsoNormal style='text-align:justify'><span style='font-family:"Times New Roman"'><a
-href="git clone https://github.com/VS15/HA-Mesos-Cluster</a><o:p></o:p></span></p>
-git clone https://github.com/VS15/HA-Mesos-Cluster
+Steps (once your deployment environment ready) 
+git clone https://github.com/VS15/HA-Mesos-Cluster;
 ./deploy_stack.sh 
 Point you browser to http://10.1.200.12:5050 (Mesos Cluster Manager UI)
 
