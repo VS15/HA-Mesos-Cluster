@@ -35,6 +35,14 @@
     - name: Disable mesos-master service
       service: name=mesos-master state=stopped enabled=no
       tags: mesos-master_stop
+     
+    - name: Fix the etc/hosts issue
+      lineinfile: dest=/etc/hosts regexp='^127.0.1.1' line='#127.0.1.1'
+      tags: etcfix
+
+    - name: Put the right values in /etc/hosts
+      lineinfile: dest=/etc/hosts line="{{ansible_eth1.ipv4.address}} {{ansible_hostname}}" state=present
+      tags: putfix
 
     - name: Restart slave service
       service: name=mesos-slave state=restarted enabled=yes
