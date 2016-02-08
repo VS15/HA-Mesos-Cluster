@@ -1,10 +1,8 @@
 ---
 - name: Ansible Playbook to Deploy Mesos Masters/Slaves and Marathon
   hosts: localhost 
-  remote_user: vagrant
   sudo: yes
   gather_facts: yes
-  #serial: "10%"
   
   tasks:
     
@@ -13,15 +11,15 @@
       tags: add key
 
     - name: Add Repository for Mesos 
-      apt_repository: repo='deb http://repos.mesosphere.com/ubuntu vivid main' state=present
+      apt_repository: repo='deb http://repos.mesosphere.com/ubuntu vivid  main' state=present
       tags: add_repo
-
+   
     - name: Run system update
       apt: update_cache=yes
       tags: update_system
 
     - name: Installing packages
-      apt: name={{ item }} state=present
+      apt: name={{ item }} state=present force=yes
       with_items:
         - mesos
         - marathon
@@ -32,12 +30,12 @@
       tags: zookeeper_value
       
     - name: Update zookeper configuration
-      command: "sudo chmod 666  /etc/zookeeper/conf/myid; sudo echo 2 > /etc/zookeeper/conf/myid"
+      raw: "sudo chmod 666  /etc/zookeeper/conf/myid; sudo echo 2 > /etc/zookeeper/conf/myid"
       when: ansible_eth1.ipv4.address == "10.1.200.12"
       tags: zookeeper_value
 
     - name: Update zookeper configuration
-      command: "sudo chmod 666  /etc/zookeeper/conf/myid; sudo echo 3 > /etc/zookeeper/conf/myid"
+      raw: "sudo chmod 666  /etc/zookeeper/conf/myid; sudo echo 3 > /etc/zookeeper/conf/myid"
       when: ansible_eth1.ipv4.address == "10.1.200.13"
       tags: zookeeper_value
     
@@ -48,6 +46,18 @@
     - name: Push /etc/mesos/zk
       copy: src=templates/zk.j2 dest=/etc/mesos/zk force=yes
       tags: push_conf2
+    
+    - name: Fix the etc/hosts issue
+      lineinfile: dest=/etc/hosts regexp='^127.0.1.1' line='#127.0.1.1'
+      tags: etcfix
+    
+    - name: Put the right values in /etc/hosts
+      lineinfile: dest=/etc/hosts line="{{ansible_eth1.ipv4.address}} {{ansible_hostname}}" state=present
+      tags: putfix
+      
+    - name: Restart zookeeper service 
+      service: name=zookeeper state=restarted enabled=yes
+      tags: Restarting zookeeper
 
     - name: Pushing quorum value of 2 
       raw: "sudo chmod 666 /etc/mesos-master/quorum; sudo echo 2 > /etc/mesos-master/quorum"

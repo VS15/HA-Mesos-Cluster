@@ -7,7 +7,6 @@
   #serial: "10%"
   
   tasks:
-    
     - name: Add Repository Key
       command: "sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv E56151BF"
       tags: add key
@@ -21,7 +20,7 @@
       tags: update_system
 
     - name: Installing packages
-      apt: name={{ item }} state=present
+      apt: name={{ item }} state=installed
       with_items:
         - mesos
     
@@ -29,10 +28,6 @@
       service: name=zookeeper state=stopped enabled=no
       tags: zookeeper_stop
     
-    - name: Overide controls
-      command: "echo manual > /etc/init/zookeeper.override"
-      tags: overide_zookeeper
-     
     - name: Push /etc/mesos/zk
       copy: src=templates/zk.j2 dest=/etc/mesos/zk force=yes
       tags: push_conf
