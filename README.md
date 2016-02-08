@@ -1,7 +1,7 @@
 # HA-Mesos-Cluster (Marathon + Zookeeper)
 1-click deployment and configuration of high availability production ready Mesos Cluster with 3 slaves.
 By using the cutting edge DevOPS tools I was able to fully automate the deployment and configuration of HA MESOS CLUSTER!
-![alt tag](https://raw.github.com/VS15/HA-Mesos-Cluster/blob/master/Mesos.png)
+![alt tag](https://raw.github.com/VS15/HA-Mesos-Cluster/master/Mesos.png)
 
 Technologies used:
 ANSIBLE
